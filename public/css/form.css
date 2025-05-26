@@ -1,0 +1,68 @@
+body {
+	background: #454554;
+	color: rgb(100, 168, 146);
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+form {
+	color: rgb(55, 55, 99);
+	background: aliceblue;
+	width: 80vw;
+	border-radius: 20px;
+	padding: 45px;
+	margin: 0 auto;
+	box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.5);
+	display: grid;
+	/* grid-template-rows: repeat(3, 1fr); */
+	grid-template-columns: repeat(3, 1fr);
+	gap: 30px 30px;
+}
+
+div textarea[name="description"] {
+	flex-grow: 3;
+}
+
+.video-info {
+	font-style: italic;
+	display: flex;
+	margin-top: 7px;
+}
+
+.video-info input {
+	font-style: italic;
+  	background-color: unset;
+	border: none;
+	width: 8vw;
+}
+
+.submission {
+	grid-column: 1/4;
+	display: flex;
+	margin: auto;
+	flex-direction: column;
+	text-align: center;
+}
+
+.option {
+  background-color: whitesmoke;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid black;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.option input {
+  display: none;
+}
+
+.option:has(input:checked) {
+  background: #007bff;
+  color: white;
+}

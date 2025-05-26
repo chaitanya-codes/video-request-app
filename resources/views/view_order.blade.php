@@ -8,9 +8,8 @@
     <title>View Order (ID: {{ $order->id }})</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    @vite('resources/css/admin/viewOrder.css')
+    <link href="{{ mix('css/admin/viewOrder.css') }}" rel="stylesheet">
 </head>
-
 <body>
     <div class="container mt-5">
         <h1 class="text-center">View Order</h1>

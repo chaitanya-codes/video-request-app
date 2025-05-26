@@ -8,9 +8,8 @@
     <title>View Order (ID: {{ $order->id }})</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    @vite('resources/css/admin/viewOrder.css')
+    <link href="{{ mix('css/admin/viewOrder.css') }}" rel="stylesheet">
 </head>
-
 <body>
     <div class="container mt-5">
         <h1 class="text-center">View Order</h1>
@@ -31,7 +30,8 @@
                 'segmentation' => false,
                 'final_review' => false,
             ];
-            function getStatusLabel($orderStatus, $limit, $path, $approvedScript) {
+            function getStatusLabel($orderStatus, $limit, $path, $approvedScript)
+            {
                 if ($orderStatus->stage > $limit && $approvedScript) {
                     return 'Completed';
                 } elseif ($orderStatus->stage == $limit && !isset($orderStatus->$path)) {
@@ -63,7 +63,8 @@
                         {{ getStatusLabel($orderStatus, 3, 'segments_path', $approved['segment']) }}
                     </div>
                 </div>
-                <div class="stage {{ $orderStatus->stage >= 4 && isset($orderStatus->final_video_path) ? 'stage-completed' : '' }}">
+                <div
+                    class="stage {{ $orderStatus->stage >= 4 && isset($orderStatus->final_video_path) ? 'stage-completed' : '' }}">
                     <div class="stage-label">Final Review</div>
                     <div class="stage-content">
                         {{ getStatusLabel($orderStatus, 4, 'final_video_path', $approved['final_review']) }}
@@ -94,28 +95,34 @@
         @elseif (getStatusLabel($orderStatus, 3, 'segments_path', $approved['segment']) == 'Pending' && $orderStatus->stage == 3)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script Segments</h5>
-                <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
-                    <button type="button" class="btn btn-info mt-3" data-bs-toggle="modal" data-bs-target="#segmentsModal">Upload</button>
+                    <button type="button" class="btn btn-info mt-3" data-bs-toggle="modal"
+                        data-bs-target="#segmentsModal">Upload</button>
                     <div class="modal fade" id="segmentsModal" tabindex="-1" aria-labelledby="segmentsModalLabel"
                         aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="segmentsModalLabel">Script Segments</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="segment_file" class="form-label">Upload Segments</label>
-                                        <input type="file" name="segment_file[]" class="form-control" accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
+                                        <input type="file" name="segment_file[]" class="form-control"
+                                            accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
                                         <div class="invalid-feedback">
-                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
+                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv,
+                                            .scorm).
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </div>
                             </div>
@@ -158,13 +165,38 @@
                         style="width: 20px; height: 20px; background-color: {{ $order->brand_color }}; display: inline-block;"></span>
                     {{ $order->brand_color }}</li>
                 <li class="list-group-item"><strong>Design Notes:</strong> {{ $order->brand_design_notes }}</li>
-                <li class="list-group-item"><strong>2D Animation Required:</strong> {{ $order->animation_required ? 'Yes' : 'No' }}</li>
+                <li class="list-group-item"><strong>2D Animation Required:</strong>
+                    {{ $order->animation_required ? 'Yes' : 'No' }}</li>
             </ul>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
     </script>
-</body>
+    <input type="file" id="upload" multiple>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('upload').addEventListener('change', function() {
+            const formData = new FormData();
+            for (const file of this.files) {
+                formData.append('files[]', file);
+            }
+
+            axios.post('/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function(progressEvent) {
+                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log(`Upload progress: ${percent}%`);
+                }
+            }).then(response => {
+                alert('Upload complete');
+            }).catch(error => {
+                console.error(error);
+            });
+        });
+    </script>
+</body>
 </html>

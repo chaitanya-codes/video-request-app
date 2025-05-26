@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Video Production Request</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    @vite("resources/css/form.css")
+    <link href="{{ mix('css/form.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="container">
