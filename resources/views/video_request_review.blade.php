@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="btn-group flex gap-5">
-            <a href="{{ route('video-requests.create', [...$queryData]) }}" class="btn btn-outline-secondary">Edit</a>
+            <a href="{{ route('video-requests.create', $queryData) }}" class="btn btn-outline-secondary">Edit</a>
             <form method="POST" action="{{ route('video-requests.place-order') }}">
                 @csrf
                 @foreach ($data as $key => $value)
