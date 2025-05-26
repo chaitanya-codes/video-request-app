@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\WorkOrder;
+use App\Models\WorkOrderStatus;
+use Illuminate\Support\Facades\Storage;
+
+class VideoRequestController extends Controller {
+    
+    public function form(Request $request) {
+        return view('video_request');
+    }
+
+    public function submitForm(Request $request) {
+        $data = $request->all();
+        if ($request->hasFile('logo_path')) {
+            $logoPath = $request->file('logo_path')->store('logos', 'public');
+            $data['logo_path'] = $logoPath;
+        }
+        return view('video_request_review', [
+            'data' => $data
+        ]);
+    }
+    
+    public function placeOrder(Request $request) {
+        $data = $request->all();
+        
+        $insertData = collect($data)->only([
+            'video_name',
+            'description',
+            'orientation',
+            'output_format',
+            'avatar_gender',
+            'num_modules',
+            'logo_path',
+            'brand_color',
+            'brand_theme',
+            'brand_design_notes',
+            'animation_required',
+        ])->toArray();
+        $insertData['animation_required'] = $data['animation_required'] === 'on' ? 1 : 0;
+        $newRow = WorkOrder::create($insertData);
+
+        $approved = json_encode([
+            'script' => false,
+            'voiceover' => false,
+            'segment' => false,
+            'final_review' => false,
+        ]);
+        $statusData = [
+            'video_request_id' => $newRow->id,
+            'stage' => 1,
+            'script_path' => null,
+            'voiceover_path' => null,
+            'segments_path' => null,
+            'final_video_path' => null,
+            'approved' => $approved,
+            'notes' => null,
+        ];
+        WorkOrderStatus::create($statusData);
+
+        // DB::table('video_requests')->insert($insertData);
+        
+        return redirect()->route("video-requests.create")->with('success', 'Video request placed successfully!');
+    }
+    public function viewOrder(Request $request) {
+        // $userId = auth()->user()->id;
+        // $orderId = $request->input('order_id');
+
+        // sample id
+        $orderId = WorkOrder::orderBy('id', 'desc')->first()->id;
+        if ($orderId) {
+            $workOrder = WorkOrder::find($orderId);
+            if ($workOrder) {
+                return view('view_order', [
+                    'order' => $workOrder,
+                    'orderStatus' => WorkOrderStatus::where('video_request_id', $orderId)->first()
+                ]);
+            } else {
+                return redirect()->route('video-requests.create')->with('error', 'Order not found!');
+            }
+        } else {
+            return redirect()->route('video-requests.create')->with('error', 'No order ID provided!');
+        }
+    }
+
+    public function viewOrderFile(Request $request, $id) {
+        $workOrderStatus = WorkOrderStatus::where('video_request_id', $id)->first();
+        $file = urldecode($request->query('path'));
+        if (explode('/', $file)[0] === 'segments') {
+            return Storage::disk('public')->response($file);
+        } else if ($workOrderStatus && $workOrderStatus->$file) {
+            return Storage::disk('public')->response($workOrderStatus->$file);
+        } else {
+            return redirect()->route('video-requests.create')->with('error', 'File not found!');
+        }
+    }
+
+    public function reviewOrder(Request $request, $id) {
+        $request->validate([
+            'id' => 'exists:video_requests,id'
+        ]);
+        $workOrder = WorkOrder::find($id);
+        $workOrderStatus = WorkOrderStatus::where('video_request_id', $id)->first();
+        $action = $request->input('action');
+        $key = $request->input('key');
+        $path = $request->input('path');
+        $approved = json_decode($workOrderStatus->approved);
+        $stage = $workOrderStatus->stage;
+
+        if ($action === 'approve') {
+            $approved->$key = true;
+            $workOrderStatus->approved = json_encode($approved);
+            if ($stage < 5) $workOrderStatus->stage = ($stage + 1) % 6;
+            $workOrderStatus->save();
+            return redirect()->route('order.view', ['id' => $workOrder->id])->with('success', 'File approved successfully!');
+        } else if ($action === 'disapprove') {
+            $approved->$key = false;
+            $workOrderStatus->approved = json_encode($approved);
+            $workOrderStatus->$path = null;
+            $workOrderStatus->save();
+            return redirect()->route('order.view', ['id' => $workOrder->id])->with('error', 'File rejected!');
+        } else return redirect()->route('order.view', ['id' => $workOrder->id])->with('error', 'Invalid action!');
+    }
+}
