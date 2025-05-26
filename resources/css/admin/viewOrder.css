@@ -1,0 +1,54 @@
+.parallelogram {
+    width: 90%;
+    height: 20vh;
+    background-color: aliceblue;
+    transform: skew(-20deg);
+    margin: auto;
+    margin-top: 2vh;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.stage {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius:  5px;
+    color: mintcream;
+    background: linear-gradient(to bottom right, #5f72bd, #9b23ea);
+}
+
+.stage:hover {
+    transform: scale(1.03);
+}
+.stage-label {
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+    width: 100%;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.stage-completed {
+    background: linear-gradient(to bottom right, #28a745, #20c997);
+}
+
+.stage-completed .stage-label {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.stage-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70%;
+    transform: skewY(-0.4deg);
+    font-size: 1.1rem;
+}
