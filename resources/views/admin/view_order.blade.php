@@ -8,7 +8,15 @@
     <title>View Order (ID: {{ $order->id }})</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress/nprogress.css" />
+    <script src="https://cdn.jsdelivr.net/npm/nprogress/nprogress.js"></script>
     <link href="{{ mix('css/admin/viewOrder.css') }}" rel="stylesheet">
+    <style>
+        #nprogress .bar {
+            background: #34b42c !important;
+            height: 1vh !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
@@ -30,8 +38,7 @@
                 'segmentation' => false,
                 'final_review' => false,
             ];
-            function getStatusLabel($orderStatus, $limit, $path, $approvedScript)
-            {
+            function getStatusLabel($orderStatus, $limit, $path, $approvedScript) {
                 if ($orderStatus->stage > $limit && $approvedScript) {
                     return 'Completed';
                 } elseif ($orderStatus->stage == $limit && !isset($orderStatus->$path)) {
@@ -173,28 +180,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
     </script>
-    <input type="file" id="upload" multiple>
-
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.getElementById('upload').addEventListener('change', function() {
-            const formData = new FormData();
-            for (const file of this.files) {
-                formData.append('files[]', file);
-            }
-
-            axios.post('/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: function(progressEvent) {
-                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    console.log(`Upload progress: ${percent}%`);
-                }
-            }).then(response => {
-                alert('Upload complete');
-            }).catch(error => {
-                console.error(error);
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const formData = new FormData();
+                    for (const file of this.files) {
+                        formData.append('files[]', file);
+                    }
+                    NProgress.start();
+                    axios.post('/upload', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        onUploadProgress: function(progressEvent) {
+                            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            NProgress.set(percent / 100);
+                        }
+                    }).then(response => {
+                        NProgress.done();
+                    }).catch(error => {
+                        NProgress.done();
+                        console.error(error);
+                    });
+                });
             });
         });
     </script>
