@@ -16,7 +16,11 @@
         @elseif (session('error'))
             <p style="color: red">{{ session('error') }}</p>
         @endif
-        <form method="POST" action="{{ route('video-requests.store') }}" enctype="multipart/form-data">
+        @php
+            $arr = [];
+            if (request('edit') && request('id')) $arr = ['edit' => request('edit'), 'id' => request('id')];
+        @endphp
+        <form method="POST" action="{{ route('video-requests.store', $arr) }}" enctype="multipart/form-data">
             @csrf
             <div class="form-floating mb-3">
                 <input type="text" name="video_name" class="form-control" value="{{ request('video_name') }}" placeholder="Video Name" required>

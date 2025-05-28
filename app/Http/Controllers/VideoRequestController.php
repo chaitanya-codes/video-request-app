@@ -22,7 +22,8 @@ class VideoRequestController extends Controller {
             $data['logo_path'] = $logoPath;
         }
         return view('video_request_review', [
-            'data' => $data
+            'data' => $data,
+            'edit' => (isset($data['edit']) && $data['edit'] == true)
         ]);
     }
     
@@ -56,8 +57,10 @@ class VideoRequestController extends Controller {
             $userId = $user->id;
         }
         $insertData['user_id'] = $userId;
-        if ($request->query("edit") === 'true') {
-            $orderId = $request->query("id");
+
+        if (isset($data['edit']) && $data["edit"] === 'true') {
+            // TODO: Verify user is editing their order only
+            $orderId = $data["id"];
             $existingOrder = WorkOrder::find($orderId);
             if ($existingOrder) {
                 $existingOrder->update($insertData);
@@ -95,7 +98,8 @@ class VideoRequestController extends Controller {
         $userId = optional(auth()->user())->id ?? rand(0, 5);
         $workOrders = WorkOrder::where('user_id', $userId)->paginate(10);
         return view('view_orders', [
-            'orders' => $workOrders
+            'orders' => $workOrders,
+            'userId' => $userId
         ]);
     }
 

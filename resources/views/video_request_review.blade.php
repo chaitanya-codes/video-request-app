@@ -36,10 +36,6 @@
             if (!isset($data['animation_required'])) {
                 $data['animation_required'] = 0;
             }
-            if (isset($data['edit']) && $data['edit'] === 'true') {
-                $queryData['edit'] = 'true';
-                $queryData['id'] = $data['id'];
-            }
             $data['expected_cost'] = $data['animation_required'] ? $data['expected_duration'] * 3000 : $data['expected_duration'] * 2400;
             $data['advance_cost'] = $data['expected_cost'] * 30 / 100;
         @endphp
@@ -65,7 +61,7 @@
         </div>
         <div class="btn-group flex gap-5">
             <a href="{{ route('video-requests.create', $queryData) }}" class="btn btn-outline-secondary">Edit</a>
-            <form method="POST" action="{{ route('video-requests.place-order') }}">
+            <form method="POST" action="{{ route('video-requests.place-order', ['edit' => $edit]) }}">
                 @csrf
                 @foreach ($data as $key => $value)
                     <input type="hidden" name="{{ $key }}" value="{{ $value }}">

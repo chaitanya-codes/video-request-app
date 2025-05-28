@@ -11,6 +11,7 @@
 </head>
 <body>
     <div class="container">
+        <h4>Refresh for random ID! (Currently selected: {{ $userId }})</h4>
         <h1>Orders</h1>
         @if (session('success'))
             <p style="color: green">{{ session('success') }}</p>
