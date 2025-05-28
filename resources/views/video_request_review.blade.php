@@ -36,6 +36,10 @@
             if (!isset($data['animation_required'])) {
                 $data['animation_required'] = 0;
             }
+            if (isset($data['edit']) && $data['edit'] === 'true') {
+                $queryData['edit'] = 'true';
+                $queryData['id'] = $data['id'];
+            }
             $data['expected_cost'] = $data['animation_required'] ? $data['expected_duration'] * 3000 : $data['expected_duration'] * 2400;
             $data['advance_cost'] = $data['expected_cost'] * 30 / 100;
         @endphp

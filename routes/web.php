@@ -10,7 +10,7 @@ use App\Http\Middleware\Authenticate;
 Route::get('/', function () {
     return "<div style='font-size: 60px'><a href='/video-request/create'><b>Fill Form</b></a><br>
             <br><a href='/admin/orders'><b>Admin => View Orders</b></a>
-            <br><a href='/orders/3'><b>User => View Order</b></a></div>";
+            <br><a href='/orders/'><b>User => View Orders</b></a></div>";
 });
 Route::get('/video-request/create', [VideoRequestController::class, 'form'])->name("video-requests.create");
 
@@ -21,6 +21,7 @@ Route::post('/video-request/place-order', [VideoRequestController::class, 'place
 // Route::get('/login', function () {
 //     return "<div style='font-size: 60px'>Login Page</div>";
 // })->name("login");
+Route::get('/orders', [VideoRequestController::class, 'viewOrders'])->name("order.index");
 Route::get('/orders/{id}', [VideoRequestController::class, 'viewOrder'])->name("order.view");
 Route::get('/orders/{id}/file', [VideoRequestController::class, 'viewOrderFile'])->name("order.view-file");
 Route::post('/orders/{id}/update-status', [VideoRequestController::class, 'reviewOrder'])->name("order.update-status");

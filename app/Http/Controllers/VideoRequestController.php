@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderStatus;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class VideoRequestController extends Controller {
@@ -42,6 +43,30 @@ class VideoRequestController extends Controller {
             'animation_required',
         ])->toArray();
         $insertData['animation_required'] = $data['animation_required'] === 'on' ? 1 : 0;
+
+        $userId = optional(auth()->user())->id ?? rand(0, 5);
+        $user = User::find($userId);
+        if (!$user) {
+            $user = User::create([
+                'id' => $userId,
+                'name' => 'USER',
+                'email' => 'user' . $userId . '@gmail.com',
+                'password' => 'pass'
+            ]);
+            $userId = $user->id;
+        }
+        $insertData['user_id'] = $userId;
+        if ($request->query("edit") === 'true') {
+            $orderId = $request->query("id");
+            $existingOrder = WorkOrder::find($orderId);
+            if ($existingOrder) {
+                $existingOrder->update($insertData);
+                return redirect()->route("video-requests.create")->with('success', 'Video request updated successfully!');
+            } else {
+                return redirect()->route("video-requests.create")->with('error', 'Order not found!');
+            }
+        }
+
         $newRow = WorkOrder::create($insertData);
 
         $approved = json_encode([
@@ -66,6 +91,14 @@ class VideoRequestController extends Controller {
         
         return redirect()->route("video-requests.create")->with('success', 'Video request placed successfully!');
     }
+    public function viewOrders(Request $request) {
+        $userId = optional(auth()->user())->id ?? rand(0, 5);
+        $workOrders = WorkOrder::where('user_id', $userId)->paginate(10);
+        return view('view_orders', [
+            'orders' => $workOrders
+        ]);
+    }
+
     public function viewOrder(Request $request) {
         // $userId = auth()->user()->id;
         // $orderId = $request->input('order_id');
