@@ -18,6 +18,9 @@ Route::post('/video-request', [VideoRequestController::class, 'submitForm'])->na
 
 Route::post('/video-request/place-order', [VideoRequestController::class, 'placeOrder'])->name("video-requests.place-order");
 
+// Route::get('/login', function () {
+//     return "<div style='font-size: 60px'>Login Page</div>";
+// })->name("login");
 Route::get('/orders/{id}', [VideoRequestController::class, 'viewOrder'])->name("order.view");
 Route::get('/orders/{id}/file', [VideoRequestController::class, 'viewOrderFile'])->name("order.view-file");
 Route::post('/orders/{id}/update-status', [VideoRequestController::class, 'reviewOrder'])->name("order.update-status");

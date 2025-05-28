@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderStatus;
 use Illuminate\Support\Facades\Storage;
 
-class VideoRequestController extends Controller
-{
+class VideoRequestController extends Controller {
+    
     public function form(Request $request) {
         return view('video_request');
     }
@@ -88,11 +89,13 @@ class VideoRequestController extends Controller
 
     public function viewOrderFile(Request $request, $id) {
         $workOrderStatus = WorkOrderStatus::where('video_request_id', $id)->first();
-        $file = $request->query('path');
-        if ($workOrderStatus && $workOrderStatus->$file) {
+        $file = urldecode($request->query('path'));
+        if (explode('/', $file)[0] === 'segments') {
+            return Storage::disk('public')->response($file);
+        } else if ($workOrderStatus && $workOrderStatus->$file) {
             return Storage::disk('public')->response($workOrderStatus->$file);
         } else {
-            return redirect()->route('video-requests.create')->with('error', 'Order not found!');
+            return redirect()->route('video-requests.create')->with('error', 'File not found!');
         }
     }
 
@@ -111,7 +114,7 @@ class VideoRequestController extends Controller
         if ($action === 'approve') {
             $approved->$key = true;
             $workOrderStatus->approved = json_encode($approved);
-            if ($stage < 4) $workOrderStatus->stage = ($stage + 1) % 5;
+            if ($stage < 5) $workOrderStatus->stage = ($stage + 1) % 6;
             $workOrderStatus->save();
             return redirect()->route('order.view', ['id' => $workOrder->id])->with('success', 'File approved successfully!');
         } else if ($action === 'disapprove') {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderStatus;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class WorkOrderController extends Controller
 {
@@ -56,10 +57,12 @@ class WorkOrderController extends Controller
             } else if ($request->hasFile('voiceover_file')) {
                 $videoPath = $request->file('voiceover_file')->store('voiceovers', 'public');
                 $workOrderStatus->voiceover_path = $videoPath;
-            } else if ($request->hasFile('segments_file')) {
-                $videoPath = $request->file('segments_file')->store('segments', 'public');
+            } else if ($request->hasFile('segment_file')) {
                 $segments = $workOrderStatus->segments_path ?? [];
-                $segments[] = $videoPath;
+                foreach ($request->file('segment_file') as $index => $file) {
+                    $videoPath = $file->store('segments', 'public');
+                    $segments[] = $videoPath;
+                }
                 $workOrderStatus->segments_path = $segments;
             } else if ($request->hasFile('final_video_file')) {
                 $videoPath = $request->file('final_video_file')->store('final_videos', 'public');
