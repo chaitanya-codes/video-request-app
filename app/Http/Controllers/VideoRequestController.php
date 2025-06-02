@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\WorkOrder;
-use App\Models\WorkOrderStatus;
+use App\Models\WorkorderStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,7 +41,7 @@ class VideoRequestController extends Controller {
             'brand_color',
             'brand_theme',
             'brand_design_notes',
-            'animation_required',
+            'animation_required'
         ])->toArray();
         $insertData['animation_required'] = $data['animation_required'] === 'on' ? 1 : 0;
 
@@ -103,18 +103,20 @@ class VideoRequestController extends Controller {
         ]);
     }
 
-    public function viewOrder(Request $request) {
+    public function viewOrder(Request $request, $id) {
+        $request->validate([
+            'id' => 'exists:video_requests,id'
+        ]);
+        // TODO: Check if user is viewing their order only
         // $userId = auth()->user()->id;
-        // $orderId = $request->input('order_id');
 
         // sample id
-        $orderId = WorkOrder::orderBy('id', 'desc')->first()->id;
-        if ($orderId) {
-            $workOrder = WorkOrder::find($orderId);
+        if ($id) {
+            $workOrder = WorkOrder::find($id);
             if ($workOrder) {
                 return view('view_order', [
                     'order' => $workOrder,
-                    'orderStatus' => WorkOrderStatus::where('video_request_id', $orderId)->first()
+                    'orderStatus' => WorkorderStatus::where('video_request_id', $id)->first()
                 ]);
             } else {
                 return redirect()->route('video-requests.create')->with('error', 'Order not found!');
@@ -125,7 +127,7 @@ class VideoRequestController extends Controller {
     }
 
     public function viewOrderFile(Request $request, $id) {
-        $workOrderStatus = WorkOrderStatus::where('video_request_id', $id)->first();
+        $workOrderStatus = WorkorderStatus::where('video_request_id', $id)->first();
         $file = urldecode($request->query('path'));
         if (explode('/', $file)[0] === 'segments') {
             return Storage::disk('public')->response($file);
@@ -141,7 +143,7 @@ class VideoRequestController extends Controller {
             'id' => 'exists:video_requests,id'
         ]);
         $workOrder = WorkOrder::find($id);
-        $workOrderStatus = WorkOrderStatus::where('video_request_id', $id)->first();
+        $workOrderStatus = WorkorderStatus::where('video_request_id', $id)->first();
         $action = $request->input('action');
         $key = $request->input('key');
         $path = $request->input('path');

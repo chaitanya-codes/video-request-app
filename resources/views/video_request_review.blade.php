@@ -15,7 +15,6 @@
         </div>
         <div class="invoice-subtitle">
             <p>Please review the details below and confirm your order.</p>
-
         @php
             $data['expected_duration'] = $data['num_modules'] * 3;
             $fields = [

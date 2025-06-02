@@ -12,6 +12,9 @@
 </head>
 <body>
     <div class="container mt-5">
+        <a href="{{ route('order.index') }}" class="btn btn-secondary">
+            &larr; Go Back
+        </a>
         <h1 class="text-center">View Order</h1>
         <h4 class="text-center">{{ $order->video_name }}</h4>
         @if (session('success'))
