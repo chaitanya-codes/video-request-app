@@ -92,9 +92,10 @@ class WorkOrderController extends Controller
             if ($uploaded) {
                 $workOrderStatus->save();
                 ProcessWorkOrderUpdate::dispatch($workOrderStatus);
+                return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('success', substr(ucfirst(explode("/", $videoPath)[0]), 0, -1) . ' uploaded successfully!');
             }
             // notes -> $request->input('notes');
-            return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('success', substr(ucfirst(explode("/", $videoPath)[0]), 0, -1) . ' uploaded successfully!');
+            return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('error', 'File not uploaded!');
         } else {
             return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('error', 'Order not found!');
         }
@@ -105,7 +106,7 @@ class WorkOrderController extends Controller
             'id' => 'exists:workorder_status,id'
         ]);
         $workOrder = WorkOrder::find($id);
-        if ($workOrder && $workOrder->video_path) {
+        if ($workOrder && $workOrder->final_video_path) {
             return Storage::disk('public')->response($workOrder->video_path);
         } else {
             return redirect()->route('admin.orders.index')->with('error', 'Video not found for this order!');
