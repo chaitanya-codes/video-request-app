@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\WorkOrder;
 use App\Models\WorkorderStatus;
 use Illuminate\Support\Facades\Storage;
@@ -11,11 +12,26 @@ use App\Jobs\ProcessWorkOrderUpdate;
 
 class WorkOrderController extends Controller
 {
+    public function dashboard(Request $request) {
+        return view('admin.dashboard', [
+            'users' => User::paginate(10),
+            'orders' => WorkOrder::paginate(10),
+            'orderStatus' => WorkorderStatus::paginate(10)
+        ]);
+    }
+
     public function viewOrders(Request $request) {
         $workOrders = WorkOrder::paginate(10);
 
         return view('admin.view_orders', [
             'orders' => $workOrders
+        ]);
+    }
+
+    public function viewUsers(Request $request) {
+        $users = User::paginate(10);
+        return view('admin.view_users', [
+            'users' => $users
         ]);
     }
 

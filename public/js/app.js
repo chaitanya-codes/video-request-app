@@ -2094,6 +2094,17 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./resources/css/admin/dashboard.css":
+/*!*******************************************!*\
+  !*** ./resources/css/admin/dashboard.css ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "./resources/css/admin/viewOrder.css":
 /*!*******************************************!*\
   !*** ./resources/css/admin/viewOrder.css ***!
@@ -2120,6 +2131,17 @@ process.umask = function() { return 0; };
 /*!********************************!*\
   !*** ./resources/css/form.css ***!
   \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ "./resources/css/navbar.css":
+/*!**********************************!*\
+  !*** ./resources/css/navbar.css ***!
+  \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -2170,17 +2192,19 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /***/ }),
 
 /***/ 0:
-/*!****************************************************************************************************************************************************************!*\
-  !*** multi ./resources/js/app.js ./resources/css/form.css ./resources/css/review.css ./resources/css/admin/viewOrder.css ./resources/css/admin/viewOrders.css ***!
-  \****************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** multi ./resources/js/app.js ./resources/css/form.css ./resources/css/review.css ./resources/css/navbar.css ./resources/css/admin/viewOrder.css ./resources/css/admin/viewOrders.css ./resources/css/admin/dashboard.css ***!
+  \*******************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\js\app.js */"./resources/js/app.js");
 __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\form.css */"./resources/css/form.css");
 __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\review.css */"./resources/css/review.css");
+__webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\navbar.css */"./resources/css/navbar.css");
 __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\admin\viewOrder.css */"./resources/css/admin/viewOrder.css");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\admin\viewOrders.css */"./resources/css/admin/viewOrders.css");
+__webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\admin\viewOrders.css */"./resources/css/admin/viewOrders.css");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\ordertracker\resources\css\admin\dashboard.css */"./resources/css/admin/dashboard.css");
 
 
 /***/ })

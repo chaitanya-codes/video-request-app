@@ -9,6 +9,9 @@
     <link href="{{ mix('css/form.css') }}" rel="stylesheet">
 </head>
 <body>
+    <a href="{{ route('home') }}" class="btn btn-secondary position-absolute">
+            &larr; Go Back
+    </a>
     <div class="container">
         <h1>Request a Video</h1>
         @if (session('success'))

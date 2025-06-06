@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 <div
-                    class="stage {{ $orderStatus->stage >= 4 && isset($orderStatus->final_video_path) ? 'stage-completed' : '' }}">
+                    class="stage {{ $orderStatus->stage > 4 && isset($orderStatus->final_video_path) ? 'stage-completed' : '' }}">
                     <div class="stage-label">Final Review</div>
                     <div class="stage-content">
                         {{ getStatusLabel($orderStatus, 4, 'final_video_path', $approved['final_review']) }}

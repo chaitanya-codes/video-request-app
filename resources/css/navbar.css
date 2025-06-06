@@ -1,0 +1,26 @@
+nav {
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    padding: 0 1em;
+    gap: 2em;
+}
+
+ul li a {
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #007bff;
+}
+
+ul li a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

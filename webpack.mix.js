@@ -15,5 +15,7 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/videoRequest.js', 'public/js')
     .postCss('resources/css/form.css', 'public/css')
     .postCss('resources/css/review.css', 'public/css')
+    .postCss('resources/css/navbar.css', 'public/css')
     .postCss('resources/css/admin/viewOrder.css', 'public/css/admin')
-    .postCss('resources/css/admin/viewOrders.css', 'public/css/admin');
+    .postCss('resources/css/admin/viewOrders.css', 'public/css/admin')
+    .postCss('resources/css/admin/dashboard.css', 'public/css/admin');

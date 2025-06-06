@@ -10,10 +10,8 @@ use App\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () {
-    return "<div style='font-size: 60px'><a href='/video-request/create'><b>Fill Form</b></a><br>
-            <br><a href='/admin/orders'><b>Admin => View Orders</b></a>
-            <br><a href='/orders/'><b>User => View Orders</b></a></div>";
-});
+    return view('home');
+})->name("home");
 Route::get('/video-request/create', [VideoRequestController::class, 'form'])->name("video-requests.create");
 
 Route::post('/video-request', [VideoRequestController::class, 'submitForm'])->name("video-requests.store");
@@ -29,7 +27,9 @@ Route::get('/orders/{id}/file', [VideoRequestController::class, 'viewOrderFile']
 Route::post('/orders/{id}/update-status', [VideoRequestController::class, 'reviewOrder'])->name("order.update-status");
 
 Route::middleware([Authenticate::class])->group(function() {
+    Route::get('/admin', [WorkOrderController::class, 'dashboard'])->name("admin.dashboard");
     Route::get('/admin/orders', [WorkOrderController::class, 'viewOrders'])->name("admin.orders.index");
+    Route::get('/admin/users', [WorkOrderController::class, 'viewUsers'])->name("admin.users.index");
 
     Route::delete('/admin/orders/{id}', [WorkOrderController::class, 'deleteOrder'])->name("admin.orders.delete");
     Route::get('/admin/orders/{id}', [WorkOrderController::class, 'viewOrder'])->name("admin.orders.view");

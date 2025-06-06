@@ -10,6 +10,7 @@
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 </head>
 <body>
+    @include('navbar')
     <div class="container">
         <h4>Refresh for random ID! (Currently selected: {{ $userId }})</h4>
         <h1>Orders</h1>

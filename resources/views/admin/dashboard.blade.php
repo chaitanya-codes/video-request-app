@@ -4,23 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Video Requests</title>
-    <link href="{{ mix('css/admin/viewOrders.css') }}" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <title>Admin dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ mix('css/admin/dashboard.css') }}">
 </head>
 <body>
     @include('navbar')
     <div class="container">
-        <h1>Orders</h1>
-        @if (session('success'))
-            <p style="color: green">{{ session('success') }}</p>
-        @elseif (session('error'))
-            <p style="color: red">{{ session('error') }}</p>
-        @endif
-        <div class="header">
-            {{ $orders->links() }}
-        </div>
-        <div class="orders">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the admin dashboard. Here you can manage orders, users, and more.</p>
+        @php
+            function getOrders($user, $orders, $orderStatus) {
+                $orderDetails = '';
+                $count = 0;
+                foreach ($orders as $index => $order) {
+                    if ($order['user_id'] !== $user->id) {
+                        continue;
+                    }
+                    $status = array_filter($orderStatus->items(), function ($status) use ($order) {
+                        return $status->video_request_id === $order->id;
+                    });
+                    $orderDetails .= "<a class=\"btn btn-secondary\" href=\"/admin/orders/{$order['id']}\">Order #{$order['id']} (" . implode('<br>', array_map(function ($status) {
+                        return ["script", "voiceover", "segment", "final video"][$status->stage-1];
+                    }, $status)) . ")</a><br>";
+                    $count++;
+                }
+                return "$count order(s)<br>$orderDetails";
+            }
+        @endphp
+        <div class="recent-orders">
+            <h2>Recent Orders <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">View All</a></h2>
             <table class="table table-striped table-primary table-hover">
                 <thead>
                     <tr>
@@ -75,35 +88,32 @@
             </table>
         </div>
         <hr>
+        <div class="recent-users">
+            <h2>Users</h2>
+            {{ $users->links() }}
+            <table class="table table-striped table-primary table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Created At</th>
+                        <th>Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($users as $user)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>{{ $user->created_at }}</td>
+                            <td>{!! getOrders($user, $orders, $orderStatus) !!}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="footer">
-        <p>&copy; {{ date('Y') }} ByteEDGE &bull; All rights reserved.</p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        document.getElementById('upload').addEventListener('change', function() {
-            const formData = new FormData();
-            for (const file of this.files) {
-                formData.append('files[]', file);
-            }
-
-            axios.post('/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: function(progressEvent) {
-                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    console.log(`Upload progress: ${percent}%`);
-                }
-            }).then(response => {
-                alert('Upload complete');
-            }).catch(error => {
-                console.error(error);
-            });
-        });
-    </script>
 </body>
 </html>
