@@ -81,6 +81,9 @@
                 </div>
             </div>
         </div>
+        @if (isset(json_decode($orderStatus->approved)->reason))
+            <div class="card shadow-sm p-4 bg-warning bold">Order edit request: {{json_decode($orderStatus->approved)->reason}}</div>
+        @endif
         @if (getStatusLabel($orderStatus, 1, 'script_path', $approved['script']) == 'Pending' && $orderStatus->stage == 1)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script</h5>
@@ -104,19 +107,15 @@
         @elseif (getStatusLabel($orderStatus, 3, 'segments_path', $approved['segment']) == 'Pending' && $orderStatus->stage == 3)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script Segments</h5>
-                <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST"
-                    enctype="multipart/form-data">
+                <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <button type="button" class="btn btn-info mt-3" data-bs-toggle="modal"
-                        data-bs-target="#segmentsModal">Upload</button>
-                    <div class="modal fade" id="segmentsModal" tabindex="-1" aria-labelledby="segmentsModalLabel"
-                        aria-hidden="true">
+                    <button type="button" class="btn btn-info mt-3" data-bs-toggle="modal" data-bs-target="#segmentsModal">Upload</button>
+                    <div class="modal fade" id="segmentsModal" tabindex="-1" aria-labelledby="segmentsModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="segmentsModalLabel">Script Segments</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
@@ -124,8 +123,7 @@
                                         <input type="file" name="segment_file[]" class="form-control"
                                             accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
                                         <div class="invalid-feedback">
-                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv,
-                                            .scorm).
+                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
                                         </div>
                                     </div>
                                 </div>

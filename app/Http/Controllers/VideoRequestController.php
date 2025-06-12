@@ -156,8 +156,10 @@ class VideoRequestController extends Controller {
             if ($stage < 5) $workOrderStatus->stage = ($stage + 1) % 6;
             $workOrderStatus->save();
             return redirect()->route('order.view', ['id' => $workOrder->id])->with('success', 'File approved successfully!');
-        } else if ($action === 'disapprove') {
+        } else if ($action === 'edit') {
             $approved->$key = false;
+            $reason = $request->input('reason');
+            $approved->reason = $reason;
             $workOrderStatus->approved = json_encode($approved);
             $workOrderStatus->$path = null;
             $workOrderStatus->save();

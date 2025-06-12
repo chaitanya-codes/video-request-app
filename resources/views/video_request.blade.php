@@ -56,6 +56,8 @@
                     <label class="btn btn-outline-primary form-check-label" for="male">Male</label>
                     <input type="radio" class="btn-check" name="avatar_gender" value="female" id="female" required {{ request('avatar_gender') === 'female' ? 'checked' : '' }}>
                     <label class="btn btn-outline-primary form-check-label" for="female">Female</label>
+                    <input type="radio" class="btn-check" name="avatar_gender" value="none" id="none" required {{ request('avatar_gender') === 'none' ? 'checked' : '' }}>
+                    <label class="btn btn-outline-primary form-check-label" for="none">None</label>
                     <div class="invalid-feedback">
                         Please select at least one option.
                     </div>
@@ -76,9 +78,22 @@
                 <label class="form-label">Logo Path (Upload)</label>
                 <input type="file" name="logo_path" class="form-control" accept="image/*" value="{{ request('logo_path') }}">
             </div>
-            <div class="mb-3">
-                <label class="form-label">Brand Color</label>
-                <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+            <div>
+                <h5>Brand Color</h5>
+                <div class="mb-3">
+                    <label class="form-label">Primary Color</label>
+                    <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                </div>
+                <div class="d-flex">
+                    <div class="w-50">
+                        <label class="form-label">Secondary Color 1</label>
+                        <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                    </div>
+                    <div class="w-50">
+                        <label class="form-label">Secondary Color 2</label>
+                        <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                    </div>
+                </div>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" name="brand_theme" placeholder="Brand Theme" class="form-control" value="{{ request('brand_theme') }}">
