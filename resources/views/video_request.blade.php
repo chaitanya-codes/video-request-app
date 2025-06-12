@@ -10,7 +10,7 @@
 </head>
 <body>
     <a href="{{ route('home') }}" class="btn btn-secondary position-absolute">
-            &larr; Go Back
+        &larr; Go Back
     </a>
     <div class="container">
         <h1>Request a Video</h1>
@@ -94,6 +94,10 @@
                         <input type="color" name="secondary_2_brand_color" class="form-control" required value="{{ request('brand_color') }}">
                     </div>
                 </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="files">Files for Video</label>
+                <input type="file" name="files_path" class="form-control" value={{ request('files_path') }} id="files" multiple>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" name="brand_theme" placeholder="Brand Theme" class="form-control" value="{{ request('brand_theme') }}">

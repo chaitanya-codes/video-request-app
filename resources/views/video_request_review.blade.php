@@ -15,7 +15,7 @@
                 <small>{{ date('d M Y') }}</small>
             </div>
             <div class="invoice-subtitle">
-                <p>Please review the details below and confirm your order.</p>
+            <p>Please review the details below and confirm your order.</p>
             @php
                 $data['expected_duration'] = $data['num_modules'] * 3;
                 $fields = [
@@ -39,7 +39,6 @@
                 $data['expected_cost'] = $data['animation_required'] ? $data['expected_duration'] * 3000 : $data['expected_duration'] * 2400;
                 $data['advance_cost'] = $data['expected_cost'] * 30 / 100;
             @endphp
-
             @foreach ($fields as $label => $value)
                 <div class="row mb-3">
                     <div class="col-sm-4 label">{{ $label }}:</div>

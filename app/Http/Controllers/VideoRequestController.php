@@ -21,6 +21,17 @@ class VideoRequestController extends Controller {
             $logoPath = $request->file('logo_path')->store('logos', 'public');
             $data['logo_path'] = $logoPath;
         }
+        if ($request->hasFile('files_path')) {
+            $request->validate([
+                'files_path.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png,gif,svg,mp4|max:20480'
+            ]);
+            $files = $data['files_path'] ?? [];
+            foreach ($request->file('files_path') as $index => $file) {
+                $filePath = $file->store('files', 'public');
+                $files[] = $filePath;
+            }
+            $data['files_path'] = $files;
+        }
         return view('video_request_review', [
             'data' => $data,
             'edit' => (isset($data['edit']) && $data['edit'] == true)
@@ -38,6 +49,7 @@ class VideoRequestController extends Controller {
             'avatar_gender',
             'num_modules',
             'logo_path',
+            'files_path',
             'primary_brand_color',
             'secondary_1_brand_color',
             'secondary_2_brand_color',

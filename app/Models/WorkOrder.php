@@ -10,6 +10,9 @@ class WorkOrder extends Model
 
     protected $guarded = ["id"];
 
+    protected $casts = [
+        'files_path' => 'array'
+    ];
     public function status()
     {
         return $this->hasOne(WorkorderStatus::class, 'video_request_id', 'id');
