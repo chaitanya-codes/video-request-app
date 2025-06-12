@@ -38,7 +38,9 @@ class VideoRequestController extends Controller {
             'avatar_gender',
             'num_modules',
             'logo_path',
-            'brand_color',
+            'primary_brand_color',
+            'secondary_1_brand_color',
+            'secondary_2_brand_color',
             'brand_theme',
             'brand_design_notes',
             'animation_required'

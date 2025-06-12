@@ -138,9 +138,17 @@
                 <li class="list-group-item"><strong>Expected Duration:</strong>
                     {{ $order->num_modules ? $order->num_modules * 3 . ' min' : 'N/A' }}</li>
                 <li class="list-group-item"><strong>Brand Theme:</strong> {{ $order->brand_theme }}</li>
-                <li class="list-group-item"><strong>Brand Color:</strong>
-                    <span style="width: 20px; height: 20px; background-color: {{ $order->brand_color }}; display: inline-block;"></span>
-                    {{ $order->brand_color }}
+                <li class="list-group-item"><strong>Primary Brand Color:</strong>
+                    <span style="width: 20px; height: 20px; background-color: {{ $order->primary_brand_color }}; display: inline-block;"></span>
+                    {{ $order->primary_brand_color }}
+                </li>
+                <li class="list-group-item"><strong>Secondary Brand Color 1:</strong>
+                    <span style="width: 20px; height: 20px; background-color: {{ $order->secondary_1_brand_color }}; display: inline-block;"></span>
+                    {{ $order->secondary_1_brand_color }}
+                </li>
+                <li class="list-group-item"><strong>Secondary Brand Color 2:</strong>
+                    <span style="width: 20px; height: 20px; background-color: {{ $order->secondary_2_brand_color }}; display: inline-block;"></span>
+                    {{ $order->secondary_2_brand_color }}
                 </li>
                 <li class="list-group-item"><strong>Design Notes:</strong> {{ $order->brand_design_notes }}</li>
                 <li class="list-group-item"><strong>2D Animation Required:</strong>

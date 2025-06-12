@@ -82,16 +82,16 @@
                 <h5>Brand Color</h5>
                 <div class="mb-3">
                     <label class="form-label">Primary Color</label>
-                    <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                    <input type="color" name="primary_brand_color" class="form-control" required value="{{ request('brand_color') }}">
                 </div>
                 <div class="d-flex">
                     <div class="w-50">
                         <label class="form-label">Secondary Color 1</label>
-                        <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                        <input type="color" name="secondary_1_brand_color" class="form-control" required value="{{ request('brand_color') }}">
                     </div>
                     <div class="w-50">
                         <label class="form-label">Secondary Color 2</label>
-                        <input type="color" name="brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                        <input type="color" name="secondary_2_brand_color" class="form-control" required value="{{ request('brand_color') }}">
                     </div>
                 </div>
             </div>

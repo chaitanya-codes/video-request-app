@@ -19,7 +19,6 @@ form {
 	margin: 0 auto;
 	box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.5);
 	display: grid;
-	/* grid-template-rows: repeat(3, 1fr); */
 	grid-template-columns: repeat(3, 1fr);
 	gap: 30px;
 }
