@@ -25,7 +25,7 @@ class VideoRequestController extends Controller {
             $request->validate([
                 'files_path.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png,gif,svg,mp4|max:20480'
             ]);
-            $files = $data['files_path'] ?? [];
+            $files = [];
             foreach ($request->file('files_path') as $index => $file) {
                 $filePath = $file->store('files', 'public');
                 $files[] = $filePath;

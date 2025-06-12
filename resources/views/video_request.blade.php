@@ -97,7 +97,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label" for="files">Files for Video</label>
-                <input type="file" name="files_path" class="form-control" value={{ request('files_path') }} id="files" multiple>
+                <input type="file" name="files_path[]" class="form-control" value={{ request('files_path') }} id="files" multiple>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" name="brand_theme" placeholder="Brand Theme" class="form-control" value="{{ request('brand_theme') }}">

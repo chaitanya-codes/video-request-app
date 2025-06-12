@@ -63,7 +63,7 @@
                 <form method="POST" action="{{ route('video-requests.place-order', ['edit' => $edit]) }}">
                     @csrf
                     @foreach ($data as $key => $value)
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        <input type="hidden" name="{{ $key }}" value="{{ ($key == 'files_path') ? json_encode($value)  : $value }}">
                     @endforeach
                     <button class="btn btn-primary">Proceed to Checkout</button>
                 </form>

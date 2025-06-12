@@ -37,4 +37,5 @@ Route::middleware([Authenticate::class])->group(function() {
 
     Route::get('/admin/orders/{id}/video', [WorkOrderController::class, 'viewVideo'])->name("admin.orders.view-video");
     Route::get('/admin/orders/{id}/logo', [WorkOrderController::class, 'viewLogo'])->name("admin.orders.view-logo");
+    Route::get('/admin/orders/{id}/file', [WorkOrderController::class, 'viewFile'])->name("admin.orders.view-file");
 });

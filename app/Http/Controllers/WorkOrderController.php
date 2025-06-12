@@ -121,9 +121,9 @@ class WorkOrderController extends Controller
         $request->validate([
             'id' => 'exists:workorder_status,id'
         ]);
-        $workOrder = WorkOrder::find($id);
-        if ($workOrder && $workOrder->final_video_path) {
-            return Storage::disk('public')->response($workOrder->video_path);
+        $workOrderStatus = WorkorderStatus::where('video_request_id', $id)->first();
+        if ($workOrderStatus && $workOrderStatus->final_video_path) {
+            return Storage::disk('public')->response($workOrderStatus->video_path);
         } else {
             return redirect()->route('admin.orders.index')->with('error', 'Video not found for this order!');
         }
@@ -137,6 +137,19 @@ class WorkOrderController extends Controller
             return Storage::disk('public')->response($workOrder->logo_path);
         } else {
             return redirect()->route('admin.orders.index')->with('error', 'Logo not found for this order!');
+        }
+    }
+    public function viewFile(Request $request, $id) {
+        $request->validate([
+            'id' => 'exists:workorder_status,id'
+        ]);
+        $index = $request->input('index');
+        $workOrder = WorkOrder::find($id);
+        if ($workOrder && $workOrder->files_path) {
+            $files = json_decode($workOrder->files_path);
+            return Storage::disk('public')->response($files[$index]);
+        } else {
+            return redirect()->route('admin.orders.index')->with('error', 'Files not found for this order!');
         }
     }
 }

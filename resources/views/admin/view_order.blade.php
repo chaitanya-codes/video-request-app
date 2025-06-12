@@ -120,16 +120,14 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="segment_file" class="form-label">Upload Segments</label>
-                                        <input type="file" name="segment_file[]" class="form-control"
-                                            accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
+                                        <input type="file" name="segment_file[]" class="form-control" accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
                                         <div class="invalid-feedback">
                                             Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </div>
                             </div>
@@ -166,7 +164,17 @@
                     {{ $order->num_modules ? $order->num_modules * 3 . ' min' : 'N/A' }}</li>
                 <li class="list-group-item"><strong>Logo:</strong> {!! $order->logo_path
                     ? '<a href=' . route('admin.orders.view-logo', ['id' => $order->id]) . '>View Logo</a>'
-                    : 'N/A' !!}</li>
+                    : 'N/A' !!}
+                </li>
+                <li class="list-group-item"><strong>Files:</strong>
+                    @if (isset($order->files_path))
+                        @foreach (json_decode($order->files_path) as $index => $file)
+                            <a class="btn btn-secondary" href="{{route('admin.orders.view-file', ['id' => $order->id, 'index' => $index])}}">View File</a>
+                        @endforeach
+                    @else
+                        'N/A'
+                    @endif
+                </li>
                 <li class="list-group-item"><strong>Brand Theme:</strong> {{ $order->brand_theme }}</li>
                 <li class="list-group-item"><strong>Primary Brand Color:</strong>
                     <span style="width: 20px; height: 20px; background-color: {{ $order->primary_brand_color }}; display: inline-block;"></span>
