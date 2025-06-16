@@ -19,19 +19,19 @@
             <p class="alert alert-danger">{{ session('error') }}</p>
         @endif
         @php
-            $approved = json_decode($orderStatus->approved, true) ?? [
-                'script' => false,
-                'voiceover' => false,
-                'segment' => false,
-                'final_review' => false,
+            $files = [
+                'script' => $orderFiles->where('file_type', 'script')->first(),
+                'voiceover' => $orderFiles->where('file_type', 'voiceover')->first(),
+                'segments' => $segments ?? [],
+                'final_video' => $orderFiles->where('file_type', 'final_video')->first(),
             ];
-            function getStatusLabel($orderStatus, $limit, $path, $approvedScript)
-            {
-                if ($orderStatus->stage >= $limit && $approvedScript) {
+            function getStatusLabel($orderStatus, $limit, $path, $segments = null) {
+                if ($limit === 3) $path = $segments->files_path ?? null;
+                if ($orderStatus->stage > $limit && $path) {
                     return 'Completed';
-                } elseif ($orderStatus->stage == $limit && !isset($orderStatus->$path)) {
+                } elseif ($orderStatus->stage == $limit && !isset($path)) {
                     return 'Pending';
-                } elseif ($orderStatus->stage == $limit && !$approvedScript) {
+                } elseif ($orderStatus->stage == $limit) {
                     return 'Awaiting approval';
                 }
                 return 'Pending';
@@ -41,29 +41,27 @@
             <h4 class="card-title mb-3">Order Progress</h4>
             <div class="parallelogram">
                 @foreach ([
-                        1 => ['label' => 'Script Generation', 'key' => 'script', 'path' => 'script_path'],
-                        2 => ['label' => 'Voiceover Generation', 'key' => 'voiceover', 'path' => 'voiceover_path'],
-                        3 => ['label' => 'Script Segments', 'key' => 'segment', 'path' => 'segments_path'],
-                        4 => ['label' => 'Final Review', 'key' => 'final_review', 'path' => 'final_video_path'],
+                        1 => ['label' => 'Script Generation', 'key' => 'script', 'path' => 'script'],
+                        2 => ['label' => 'Voiceover Generation', 'key' => 'voiceover', 'path' => 'voiceover'],
+                        3 => ['label' => 'Script Segments', 'key' => 'segment', 'path' => 'segments'],
+                        4 => ['label' => 'Final Review', 'key' => 'final_video', 'path' => 'final_video'],
                     ] as $stage => $data)
                     <div class="stage {{ $orderStatus->stage > $stage ? 'stage-completed' : '' }}">
                         <div class="stage-label">{{ $data['label'] }}</div>
                         <div class="stage-content">
-                            {{ getStatusLabel($orderStatus, $stage, $data['path'], $approved[$data['key']] ?? false) }}
+                            {{ getStatusLabel($orderStatus, $stage, $files[$data['path']], $segments) }}
                         </div>
-                        @if (isset($orderStatus->{$data['path']}))
+                        @if (($stage !== 3 && isset($files[$data['path']]) || ($stage === 3 && $segments && count(json_decode($segments->files_path)) > 0)))
                             @if ($stage !== 3)
-                                <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $data['path']]) }}"
-                                    class="btn btn-info btn-sm mt-1">View File</a>
+                                <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $data['path']]) }}" class="btn btn-info btn-sm mt-1">View File</a>
                             @else
-                                <button class="btn btn-info btn-sm mt-1" data-bs-toggle="modal"
-                                    data-bs-target="#segmentsModal">View Segments</button>
+                                <button class="btn btn-info btn-sm mt-1" data-bs-toggle="modal" data-bs-target="#segmentsModal">View Segments</button>
                             @endif
                             <form action="{{ route('order.update-status', ['id' => $order->id, 'key' => $data['key'], 'path' => $data['path']]) }}" method="POST" class="mt-2">
                                 @csrf
                                 <div class="btn-group d-flex">
                                     <button name="action" value="approve" class="btn btn-success btn-sm"
-                                        {{ $approved[$data['key']] ? 'disabled' : '' }}>Approve</button>
+                                        {{ $orderStatus->stage < $stage ? 'disabled' : '' }}>Approve</button>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-key="{{ $data['key'] }}" data-path="{{ $data['path'] }}"
                                         {{ $orderStatus->stage > $stage ? 'disabled' : '' }}>
                                         Edit
@@ -76,8 +74,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="segmentsModal" tabindex="-1" aria-labelledby="segmentsModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="segmentsModal" tabindex="-1" aria-labelledby="segmentsModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -85,12 +82,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        @if ($orderStatus->segments_path)
-                            @foreach ($orderStatus->segments_path as $segment)
+                        @if ($segments && json_decode($segments->files_path))
+                            @foreach (json_decode($segments->files_path) as $segment)
                                 <div class="mb-3">
                                     <strong>Segment {{ $loop->iteration }}:</strong>
-                                    <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}"
-                                        class="btn btn-info btn-sm">View File</a>
+                                    <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
                                 </div>
                             @endforeach
                         @endif

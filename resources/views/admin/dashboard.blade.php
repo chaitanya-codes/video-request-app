@@ -21,12 +21,11 @@
                     if ($order['user_id'] !== $user->id) {
                         continue;
                     }
-                    $status = array_filter($orderStatus->items(), function ($status) use ($order) {
-                        return $status->video_request_id === $order->id;
-                    });
-                    $orderDetails .= "<a class=\"btn btn-secondary\" href=\"/admin/orders/{$order['id']}\">Order #{$order['id']} (" . implode('<br>', array_map(function ($status) {
-                        return ["script", "voiceover", "segment", "final video"][$status->stage-1];
-                    }, $status)) . ")</a><br>";
+                    $status = $orderStatus[$order->id] ?? null;
+                    if ($status) {
+                        $stageText = $status->stage > 4 ? "Completed" : ["script", "voiceover", "segment", "final video"][$status->stage - 1];
+                        $orderDetails .= "<a class=\"btn btn-secondary\" href=\"/admin/orders/{$order['id']}\">Order #{$order['id']} ($stageText)</a><br>";
+                    }
                     $count++;
                 }
                 return "$count order(s)<br>$orderDetails";
@@ -52,9 +51,12 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     @foreach ($orders as $index => $order)
-                        <tr class="orderRow">
+                        @php
+                            $matched = $orderStatus[$order->id] ?? null;
+                        @endphp
+                        <tr class="orderRow{{ ($matched && $matched->stage > 4) ? ' table-success' : '' }}">
                             <td>{{ ($orders->currentPage() - 1) * $orders->perPage() + $index + 1 }}</td>
                             <td>{{ $order->video_name }}</td>
                             <td>{{ $order->description }}</td>
@@ -77,9 +79,7 @@
                                         @method('DELETE')
                                         <button class="btn btn-outline-danger">Delete</button>
                                     </form>
-                                    <a href="{{ route('admin.orders.view', ['id' => $order->id]) }}"
-                                        class="btn {{ $order->video_path ? 'btn-success' : 'btn-primary' }}">View
-                                        Order</a>
+                                    <a href="{{ route('admin.orders.view', ['id' => $order->id]) }}" class="btn btn-primary">View Order</a>
                                 </div>
                             </td>
                         </tr>
@@ -101,7 +101,7 @@
                         <th>Orders</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     @foreach ($users as $user)
                         <tr>
                             <td>{{ $loop->iteration }}</td>

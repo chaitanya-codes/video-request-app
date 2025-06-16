@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\WorkOrder;
 use App\Models\WorkorderStatus;
+use App\Models\WorkorderFile;
 use App\Models\User;
+use App\Models\File;
+use App\Models\Segment;
 use Illuminate\Support\Facades\Storage;
 
 class VideoRequestController extends Controller {
@@ -49,7 +52,6 @@ class VideoRequestController extends Controller {
             'avatar_gender',
             'num_modules',
             'logo_path',
-            'files_path',
             'primary_brand_color',
             'secondary_1_brand_color',
             'secondary_2_brand_color',
@@ -71,13 +73,26 @@ class VideoRequestController extends Controller {
             $userId = $user->id;
         }
         $insertData['user_id'] = $userId;
-
+        
+        function storeFiles($id, $filesPath) {
+            if (isset($filesPath) && $filesPath ?? false) {
+                $filesPath = json_decode($filesPath);
+                foreach ($filesPath as $filePath) {
+                    $files[] = [
+                        'video_request_id' => $id,
+                        'file_path' => $filePath
+                    ];
+                }
+                File::insert($files);
+            }
+        }
         if (isset($data['edit']) && $data["edit"] === 'true') {
             // TODO: Verify user is editing their order only
             $orderId = $data["id"];
             $existingOrder = WorkOrder::find($orderId);
             if ($existingOrder) {
                 $existingOrder->update($insertData);
+                storeFiles($existingOrder->id, $data['files_path'] ?? null);
                 return redirect()->route("video-requests.create")->with('success', 'Video request updated successfully!');
             } else {
                 return redirect()->route("video-requests.create")->with('error', 'Order not found!');
@@ -86,21 +101,12 @@ class VideoRequestController extends Controller {
 
         $newRow = WorkOrder::create($insertData);
 
-        $approved = json_encode([
-            'script' => false,
-            'voiceover' => false,
-            'segment' => false,
-            'final_review' => false,
-        ]);
+        storeFiles($newRow->id, $data['files_path'] ?? null);
+
         $statusData = [
             'video_request_id' => $newRow->id,
             'stage' => 1,
-            'script_path' => null,
-            'voiceover_path' => null,
-            'segments_path' => null,
-            'final_video_path' => null,
-            'approved' => $approved,
-            'notes' => null,
+            'reason' => null
         ];
         WorkOrderStatus::create($statusData);
 
@@ -108,6 +114,7 @@ class VideoRequestController extends Controller {
         
         return redirect()->route("video-requests.create")->with('success', 'Video request placed successfully!');
     }
+
     public function viewOrders(Request $request) {
         $userId = optional(auth()->user())->id ?? rand(0, 5);
         $workOrders = WorkOrder::where('user_id', $userId)->paginate(10);
@@ -130,7 +137,10 @@ class VideoRequestController extends Controller {
             if ($workOrder) {
                 return view('view_order', [
                     'order' => $workOrder,
-                    'orderStatus' => WorkorderStatus::where('video_request_id', $id)->first()
+                    'orderStatus' => WorkorderStatus::where('video_request_id', $id)->first(),
+                    'orderFiles' => WorkorderFile::where('video_request_id', $id)->where('is_rejected', false)->get(),
+                    'userFiles' => File::where('video_request_id', $id)->get(),
+                    'segments' => Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null
                 ]);
             } else {
                 return redirect()->route('video-requests.create')->with('error', 'Order not found!');
@@ -141,12 +151,18 @@ class VideoRequestController extends Controller {
     }
 
     public function viewOrderFile(Request $request, $id) {
-        $workOrderStatus = WorkorderStatus::where('video_request_id', $id)->first();
-        $file = urldecode($request->query('path'));
-        if (explode('/', $file)[0] === 'segments') {
+        $path = $request->query('path');
+        $file_type = explode('/', $path)[0];
+        $file = null;
+        if ($file_type === 'segments') {
+            $file = Segment::where('video_request_id', $id)->where('is_rejected', false)->first();
+            if ($file) $file = urldecode($path);
+        } else {
+            $file = WorkorderFile::where('video_request_id', $id)->where('file_type', $file_type)->where('is_rejected', false)->first();
+            if ($file) $file = urldecode($file->file_path);
+        }
+        if ($file) {
             return Storage::disk('public')->response($file);
-        } else if ($workOrderStatus && $workOrderStatus->$file) {
-            return Storage::disk('public')->response($workOrderStatus->$file);
         } else {
             return redirect()->route('video-requests.create')->with('error', 'File not found!');
         }
@@ -161,21 +177,25 @@ class VideoRequestController extends Controller {
         $action = $request->input('action');
         $key = $request->input('key');
         $path = $request->input('path');
-        $approved = json_decode($workOrderStatus->approved);
         $stage = $workOrderStatus->stage;
 
         if ($action === 'approve') {
-            $approved->$key = true;
-            $workOrderStatus->approved = json_encode($approved);
             if ($stage < 5) $workOrderStatus->stage = ($stage + 1) % 6;
+            $workOrderStatus->reason = null;
             $workOrderStatus->save();
             return redirect()->route('order.view', ['id' => $workOrder->id])->with('success', 'File approved successfully!');
         } else if ($action === 'edit') {
-            $approved->$key = false;
             $reason = $request->input('reason');
-            $approved->reason = $reason;
-            $workOrderStatus->approved = json_encode($approved);
-            $workOrderStatus->$path = null;
+            if ($stage == 3) {
+                Segment::where('video_request_id', $id)->where('is_rejected', false)->first()->update([
+                    'is_rejected' => true
+                ]);
+            } else {
+                WorkorderFile::where('video_request_id', $id)->where('is_rejected', false)->where('file_type', $key)->first()->update([
+                    'is_rejected' => true
+                ]);
+            }
+            $workOrderStatus->reason = $reason;
             $workOrderStatus->save();
             return redirect()->route('order.view', ['id' => $workOrder->id])->with('error', 'File rejected!');
         } else return redirect()->route('order.view', ['id' => $workOrder->id])->with('error', 'Invalid action!');

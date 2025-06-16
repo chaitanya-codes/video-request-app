@@ -39,9 +39,12 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     @foreach ($orders as $index => $order)
-                        <tr class="orderRow">
+                        @php
+                            $matched = $orderStatus[$order->id] ?? null;
+                        @endphp
+                        <tr class="orderRow{{ ($matched && $matched->stage > 4) ? ' table-success' : '' }}">
                             <td>{{ ($orders->currentPage() - 1) * $orders->perPage() + $index + 1 }}</td>
                             <td>{{ $order->video_name }}</td>
                             <td>{{ $order->description }}</td>

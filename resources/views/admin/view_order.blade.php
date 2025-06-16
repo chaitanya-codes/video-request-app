@@ -34,18 +34,19 @@
             </div>
         @endif
         @php
-            $approved = json_decode($orderStatus->approved, true) ?? [
-                'script' => false,
-                'voiceover' => false,
-                'segmentation' => false,
-                'final_review' => false,
+            $files = [
+                'script' => $orderFiles->where('file_type', 'script')->first(),
+                'voiceover' => $orderFiles->where('file_type', 'voiceover')->first(),
+                'segments' => $segments ?? [],
+                'final_video' => $orderFiles->where('file_type', 'final_video')->first(),
             ];
-            function getStatusLabel($orderStatus, $limit, $path, $approvedScript) {
-                if ($orderStatus->stage > $limit && $approvedScript) {
+            function getStatusLabel($orderStatus, $limit, $path, $segments = null) {
+                if ($limit === 3) $path = $segments->files_path ?? null;
+                if ($orderStatus->stage > $limit && $path) {
                     return 'Completed';
-                } elseif ($orderStatus->stage == $limit && !isset($orderStatus->$path)) {
+                } elseif ($orderStatus->stage == $limit && !isset($path)) {
                     return 'Pending';
-                } elseif ($orderStatus->stage == $limit && !$approvedScript) {
+                } elseif ($orderStatus->stage == $limit) {
                     return 'Awaiting approval';
                 }
                 return 'Pending';
@@ -53,38 +54,30 @@
         @endphp
         <div class="card shadow-sm p-4">
             <h4 class="card-title">Order Status</h4>
+            @php
+                $stages = [
+                    1 => ['label' => 'Script Generation', 'key' => 'script'],
+                    2 => ['label' => 'Voiceover Generation', 'key' => 'voiceover'],
+                    3 => ['label' => 'Script Segments', 'key' => 'segments'],
+                    4 => ['label' => 'Final Review', 'key' => 'final_video'],
+                ];
+            @endphp
             <div class="parallelogram">
-                <div class="stage {{ $orderStatus->stage > 1 ? 'stage-completed' : '' }}">
-                    <div class="stage-label">Script Generation</div>
-                    <div class="stage-content">
-                        {{ getStatusLabel($orderStatus, 1, 'script_path', $approved['script']) }}
+                @foreach ($stages as $stageNum => $stage)
+                    <div class="stage {{ $orderStatus->stage > $stageNum || ($stageNum === 4 && $orderStatus->stage > 4 && isset($files->final_video)) ? 'stage-completed' : '' }}">
+                        <div class="stage-label">{{ $stage['label'] }}</div>
+                        <div class="stage-content">
+                            {{ getStatusLabel($orderStatus, $stageNum, $files[$stage['key']] ?? null, $segments) }}
+                        </div>
                     </div>
-                </div>
-                <div class="stage {{ $orderStatus->stage > 2 ? 'stage-completed' : '' }}">
-                    <div class="stage-label">Voiceover Generation</div>
-                    <div class="stage-content">
-                        {{ getStatusLabel($orderStatus, 2, 'voiceover_path', $approved['voiceover']) }}
-                    </div>
-                </div>
-                <div class="stage {{ $orderStatus->stage > 3 ? 'stage-completed' : '' }}">
-                    <div class="stage-label">Script Segments</div>
-                    <div class="stage-content">
-                        {{ getStatusLabel($orderStatus, 3, 'segments_path', $approved['segment']) }}
-                    </div>
-                </div>
-                <div
-                    class="stage {{ $orderStatus->stage > 4 && isset($orderStatus->final_video_path) ? 'stage-completed' : '' }}">
-                    <div class="stage-label">Final Review</div>
-                    <div class="stage-content">
-                        {{ getStatusLabel($orderStatus, 4, 'final_video_path', $approved['final_review']) }}
-                    </div>
-                </div>
+                @endforeach
             </div>
+
         </div>
-        @if (isset(json_decode($orderStatus->approved)->reason))
-            <div class="card shadow-sm p-4 bg-warning bold">Order edit request: {{json_decode($orderStatus->approved)->reason}}</div>
+        @if (isset($orderStatus->reason))
+            <div class="card shadow-sm p-4 bg-warning bold">Order edit request: {{ $orderStatus->reason }}</div>
         @endif
-        @if (getStatusLabel($orderStatus, 1, 'script_path', $approved['script']) == 'Pending' && $orderStatus->stage == 1)
+        @if (getStatusLabel($orderStatus, 1, $files['script']) == 'Pending' && $orderStatus->stage == 1)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script</h5>
                 <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST"
@@ -94,7 +87,7 @@
                     <button type="submit" class="btn btn-primary">Upload Script</button>
                 </form>
             </div>
-        @elseif (getStatusLabel($orderStatus, 2, 'voiceover_path', $approved['voiceover']) == 'Pending' && $orderStatus->stage == 2)
+        @elseif (getStatusLabel($orderStatus, 2, $files['voiceover']) == 'Pending' && $orderStatus->stage == 2)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Voiceover</h5>
                 <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST"
@@ -104,7 +97,7 @@
                     <button type="submit" class="btn btn-primary">Upload Voiceover</button>
                 </form>
             </div>
-        @elseif (getStatusLabel($orderStatus, 3, 'segments_path', $approved['segment']) == 'Pending' && $orderStatus->stage == 3)
+        @elseif (getStatusLabel($orderStatus, 3, $files['segments'], $segments) == 'Pending' && $orderStatus->stage == 3)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script Segments</h5>
                 <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data">
@@ -135,7 +128,7 @@
                     </div>
                 </form>
             </div>
-        @elseif (!isset($orderStatus->final_video_path) && (int) $orderStatus->stage == 4)
+        @elseif (!isset($files['final_video']) && !$files['final_video'] && (int) $orderStatus->stage == 4)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Final Review</h5>
                 <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST"
@@ -167,8 +160,8 @@
                     : 'N/A' !!}
                 </li>
                 <li class="list-group-item"><strong>Files:</strong>
-                    @if (isset($order->files_path))
-                        @foreach (json_decode($order->files_path) as $index => $file)
+                    @if (isset($userFiles))
+                        @foreach ($userFiles as $index => $file)
                             <a class="btn btn-secondary" href="{{route('admin.orders.view-file', ['id' => $order->id, 'index' => $index])}}">View File</a>
                         @endforeach
                     @else

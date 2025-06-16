@@ -20,7 +20,6 @@ return new class extends Migration
             $table->enum('avatar_gender', ['male', 'female', 'none'])->default('male');
             $table->integer('num_modules')->nullable();
             $table->string('logo_path')->nullable();
-            $table->json('files_path')->nullable();
             $table->string('primary_brand_color')->nullable();
             $table->string('secondary_1_brand_color')->nullable();
             $table->string('secondary_2_brand_color')->nullable();

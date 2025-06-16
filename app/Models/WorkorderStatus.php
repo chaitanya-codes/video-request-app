@@ -10,7 +10,4 @@ class WorkOrderStatus extends Model
 
     protected $guarded = ["id"];
 
-    protected $casts = [
-        'segments_path' => 'array'
-    ];
 }
