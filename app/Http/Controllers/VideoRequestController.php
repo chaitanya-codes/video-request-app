@@ -118,8 +118,10 @@ class VideoRequestController extends Controller {
     public function viewOrders(Request $request) {
         $userId = optional(auth()->user())->id ?? rand(0, 5);
         $workOrders = WorkOrder::where('user_id', $userId)->paginate(10);
+        $orderStatus = WorkOrderStatus::whereIn('video_request_id', $workOrders->pluck('id'))->get()->keyBy('video_request_id');
         return view('view_orders', [
             'orders' => $workOrders,
+            'orderStatus' => $orderStatus,
             'userId' => $userId
         ]);
     }

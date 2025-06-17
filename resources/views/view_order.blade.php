@@ -61,7 +61,7 @@
                                 @csrf
                                 <div class="btn-group d-flex">
                                     <button name="action" value="approve" class="btn btn-success btn-sm"
-                                        {{ $orderStatus->stage < $stage ? 'disabled' : '' }}>Approve</button>
+                                        {{ $orderStatus->stage > $stage ? 'disabled' : '' }}>Approve</button>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-key="{{ $data['key'] }}" data-path="{{ $data['path'] }}"
                                         {{ $orderStatus->stage > $stage ? 'disabled' : '' }}>
                                         Edit
