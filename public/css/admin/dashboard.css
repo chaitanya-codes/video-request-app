@@ -12,8 +12,6 @@
 #current, #total {
     background-color: slateblue;
     color: white;
-    /* display: inline-block; */
-    /* height: 100px; */
     padding: 10px;
     margin: 5px;
 }
