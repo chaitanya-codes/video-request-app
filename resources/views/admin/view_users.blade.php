@@ -23,8 +23,8 @@
                 @foreach ($users as $user)
                     <li>{{ $user->name }} ({{ $user->email }}) - {{ $user->role }}</li>
                 @endforeach
-
             </ul>
         </tbody>
+    </table>
 </body>
 </html>

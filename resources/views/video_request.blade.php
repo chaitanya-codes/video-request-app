@@ -34,7 +34,7 @@
                 <label class="form-label">Video Description</label>
             </div>
             <div class="mb-3">
-                <label class="form-label">Orientation</label>
+                <h6 class="form-label">Orientation</h6>
                 <select name="orientation" class="form-select" required>
                     <option value="" selected>Select Orientation</option>
                     <option value="landscape" {{ request('orientation') === 'landscape' ? 'selected' : '' }}>Landscape</option>
@@ -42,7 +42,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Output Format</label>
+                <h6 class="form-label">Output Format</h6>
                 <select name="output_format" class="form-select" required>
                     <option value="" selected>Select format</option>
                     <option value="mp4" {{ request('output_format') === 'mp4' ? 'selected' : '' }}>MP4</option>
@@ -50,7 +50,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Avatar Gender</label>
+                <h6 class="form-label">Avatar Gender</h6>
                 <div class="form-check" required>
                     <input type="radio" class="btn-check" name="avatar_gender" value="male" id="male" required {{ request('avatar_gender') === 'male' ? 'checked' : '' }}>
                     <label class="btn btn-outline-primary form-check-label" for="male">Male</label>
@@ -75,11 +75,11 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label class="form-label">Logo Path (Upload)</label>
+                <h6 class="form-label">Logo Path (Upload)</h6>
                 <input type="file" name="logo_path" class="form-control" accept="image/*" value="{{ request('logo_path') }}">
             </div>
             <div>
-                <h5>Brand Color</h5>
+                <h6>Brand Color</h6>
                 <div class="mb-3">
                     <label class="form-label">Primary Color</label>
                     <input type="color" name="primary_brand_color" class="form-control" required value="{{ request('brand_color') }}">
@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="files">Files for Video</label>
+                <h6 class="form-label" for="files">Files for Video</h6>
                 <input type="file" name="files_path[]" class="form-control" value={{ request('files_path') }} id="files" multiple>
             </div>
             <div class="form-floating mb-3">

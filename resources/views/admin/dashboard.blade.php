@@ -115,5 +115,6 @@
             </table>
         </div>
     </div>
+    <script src={{ mix("js/notification.js") }}></script>
 </body>
 </html>

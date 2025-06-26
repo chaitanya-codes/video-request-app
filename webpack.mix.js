@@ -13,6 +13,7 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/videoRequest.js', 'public/js')
+    .js('resources/js/notification.js', 'public/js')
     .postCss('resources/css/form.css', 'public/css')
     .postCss('resources/css/review.css', 'public/css')
     .postCss('resources/css/navbar.css', 'public/css')

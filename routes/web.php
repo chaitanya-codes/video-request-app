@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\VideoRequestController;
 use App\Http\Controllers\WorkOrderController;
-use App\Models\WorkOrder;
 use App\Http\Middleware\Authenticate;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('home');
@@ -38,4 +38,27 @@ Route::middleware([Authenticate::class])->group(function() {
     Route::get('/admin/orders/{id}/video', [WorkOrderController::class, 'viewVideo'])->name("admin.orders.view-video");
     Route::get('/admin/orders/{id}/logo', [WorkOrderController::class, 'viewLogo'])->name("admin.orders.view-logo");
     Route::get('/admin/orders/{id}/file', [WorkOrderController::class, 'viewFile'])->name("admin.orders.view-file");
+
+    Route::get('/admin/notifications/stream', function () {
+        return response()->stream(function () {
+            @ini_set('output_buffering', 'off');
+            @ini_set('zlib.output_compression', false);
+            ob_implicit_flush(true);
+
+            echo "retry: 2000\n";
+            $order = Cache::pull('latest_order_for_admin');
+            if ($order) {
+                echo "id: {$order['id']}\n";
+                echo "event: order\n";
+                echo "data: " . json_encode($order) . "\n\n";
+            } else {
+                echo ": keep-alive\n\n";
+            }
+            flush();
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+        ]);
+    });
 });

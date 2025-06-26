@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\WorkOrder;
 use App\Models\WorkorderStatus;
 use App\Models\WorkorderFile;
@@ -102,7 +103,7 @@ class VideoRequestController extends Controller {
         $newRow = WorkOrder::create($insertData);
 
         storeFiles($newRow->id, $data['files_path'] ?? null);
-
+        
         $statusData = [
             'video_request_id' => $newRow->id,
             'stage' => 1,
@@ -111,6 +112,12 @@ class VideoRequestController extends Controller {
         WorkOrderStatus::create($statusData);
 
         // DB::table('video_requests')->insert($insertData);
+        Cache::put('latest_order_for_admin', [
+            'id' => $newRow->id,
+            'video_name' => $newRow->video_name,
+            'user' => $user->name,
+            'timestamp' => now()->toIso8601String()
+        ]);
         
         return redirect()->route("video-requests.create")->with('success', 'Video request placed successfully!');
     }

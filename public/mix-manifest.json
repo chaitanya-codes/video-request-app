@@ -6,5 +6,6 @@
     "/css/admin/viewOrder.css": "/css/admin/viewOrder.css",
     "/css/admin/viewOrders.css": "/css/admin/viewOrders.css",
     "/css/admin/dashboard.css": "/css/admin/dashboard.css",
+    "/js/notification.js": "/js/notification.js",
     "/js/videoRequest.js": "/js/videoRequest.js"
 }
