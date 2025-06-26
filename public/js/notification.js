@@ -99,9 +99,17 @@ if (Notification.permission !== "granted") {
 var sse = new EventSource("/admin/notifications/stream");
 sse.addEventListener("order", function (e) {
   var data = JSON.parse(e.data);
-  new Notification("🛒 New Video Order", {
-    body: "#".concat(data.id, ": ").concat(data.video_name, " by ").concat(data.user)
+  var notification = new Notification("🛒 New Video Order", {
+    body: "#".concat(data.id, ": ").concat(data.video_name, " by ").concat(data.user),
+    data: {
+      url: "/admin/orders/".concat(data.id)
+    }
   });
+  console.log(notification);
+  notification.onclick = function (e) {
+    window.focus();
+    window.location.href = notification.data.url;
+  };
 });
 sse.onerror = function (e) {
   console.warn("SSE connection lost:", e);

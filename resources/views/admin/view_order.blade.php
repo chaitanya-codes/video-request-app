@@ -72,7 +72,6 @@
                     </div>
                 @endforeach
             </div>
-
         </div>
         @if (isset($orderStatus->reason))
             <div class="card shadow-sm p-4 bg-warning bold">Order edit request: {{ $orderStatus->reason }}</div>
