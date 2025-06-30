@@ -101,6 +101,7 @@ sse.addEventListener("order", function (e) {
   var data = JSON.parse(e.data);
   var notification = new Notification("🛒 New Video Order", {
     body: "#".concat(data.id, ": ").concat(data.video_name, " by ").concat(data.user),
+    tag: "order-".concat(data.id),
     data: {
       url: "/admin/orders/".concat(data.id)
     }

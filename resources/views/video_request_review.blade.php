@@ -65,7 +65,7 @@
                     @foreach ($data as $key => $value)
                         <input type="hidden" name="{{ $key }}" value="{{ ($key == 'files_path') ? json_encode($value)  : $value }}">
                     @endforeach
-                    <button class="btn btn-primary">Proceed to Checkout</button>
+                    <button class="btn btn-primary">@if (request('edit') === 'true') Modify Order @else Proceed to Checkout @endif</button>
                 </form>
             </div>
         </div>

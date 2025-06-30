@@ -68,8 +68,7 @@
                                         <button class="btn btn-outline-danger">Delete</button>
                                     </form>
                                     <a href="{{ route('admin.orders.view', ['id' => $order->id]) }}"
-                                        class="btn {{ $order->video_path ? 'btn-success' : 'btn-primary' }}">View
-                                        Order</a>
+                                        class="btn {{ $order->video_path ? 'btn-success' : 'btn-primary' }}">View Order</a>
                                 </div>
                             </td>
                         </tr>

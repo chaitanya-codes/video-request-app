@@ -68,7 +68,7 @@ class WorkOrderController extends Controller
                 'order' => $workOrder,
                 'orderStatus' => $workOrderStatus,
                 'orderFiles' => WorkorderFile::where('video_request_id', $id)->where('is_rejected', false)->get(),
-                'files' => File::where('video_request_id', $id)->get(),
+                'userFiles' => File::where('video_request_id', $id)->get(),
                 'segments' => Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null
             ]);
         } else {
@@ -133,7 +133,6 @@ class WorkOrderController extends Controller
                 // ProcessWorkOrderUpdate::dispatch($request->file('final_video_file'));
                 return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('success', substr(ucfirst(explode("/", $path)[0]), 0, -1) . ' uploaded successfully!');
             }
-            // notes -> $request->input('notes');
             return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('error', 'File not uploaded!');
         } else {
             return redirect()->route('admin.orders.view', ['id' => $workOrder->id])->with('error', 'Order not found!');

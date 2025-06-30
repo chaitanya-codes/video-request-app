@@ -82,22 +82,22 @@
                 <h6>Brand Color</h6>
                 <div class="mb-3">
                     <label class="form-label">Primary Color</label>
-                    <input type="color" name="primary_brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                    <input type="color" name="primary_brand_color" class="form-control" required value="{{ request('primary_brand_color') }}">
                 </div>
                 <div class="d-flex">
                     <div class="w-50">
                         <label class="form-label">Secondary Color 1</label>
-                        <input type="color" name="secondary_1_brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                        <input type="color" name="secondary_1_brand_color" class="form-control" required value="{{ request('secondary_1_brand_color') }}">
                     </div>
                     <div class="w-50">
                         <label class="form-label">Secondary Color 2</label>
-                        <input type="color" name="secondary_2_brand_color" class="form-control" required value="{{ request('brand_color') }}">
+                        <input type="color" name="secondary_2_brand_color" class="form-control" required value="{{ request('secondary_2_brand_color') }}">
                     </div>
                 </div>
             </div>
             <div class="mb-3">
                 <h6 class="form-label" for="files">Files for Video</h6>
-                <input type="file" name="files_path[]" class="form-control" value={{ request('files_path') }} id="files" multiple>
+                <input type="file" name="files_path[]" class="form-control" id="files" multiple>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" name="brand_theme" placeholder="Brand Theme" class="form-control" value="{{ request('brand_theme') }}">
