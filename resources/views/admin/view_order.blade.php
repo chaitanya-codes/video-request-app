@@ -120,40 +120,41 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($chunks)
-                                                @foreach ($chunks as $index => $chunk)
-                                                    @if (!$segments)
-                                                        <label for="segment_file" class="form-label">Upload Segments</label>
-                                                        <input type="file" name="segment_file[]" class="form-control" accept=".pdf" multiple required />
-                                                        <div class="invalid-feedback">
-                                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
-                                                        </div>
-                                                    @else
-                                                        @if ($index == 0)
-                                                            <td rowspan="999">
-                                                                <div class="p-3">Segments uploaded</div>
-                                                                @if ($segments && json_decode($segments->files_path))
-                                                                    @foreach (json_decode($segments->files_path) as $segment)
-                                                                        <div class="mb-3 min-width-5">
-                                                                            <strong>Segment {{ $loop->iteration }}:</strong>
-                                                                            <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
-                                                                        </div>
-                                                                    @endforeach
-                                                                @endif
-                                                            </td>
-                                                        @endif
-                                                    @endif
-                                                    <tr>
-                                                        <td>
-                                                            @foreach ($chunk as $line)
-                                                                <div>
-                                                                    {{ $line }}
-                                                                </div>
-                                                            @endforeach
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                            @if (!$segments)
+                                                <div>
+                                                    <label for="segment_file" class="form-label">Upload Segments</label>
+                                                    <input type="file" name="segment_file[]" class="form-control" accept=".pdf" multiple required />
+                                                    <div class="invalid-feedback">
+                                                        Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
+                                                    </div>
+                                                </div>
                                             @endif
+                                            @foreach ($chunks as $index => $chunk)
+                                                @if ($segments)
+                                                    @if ($index == 0)
+                                                        <td rowspan="999">
+                                                            <div class="p-3">Segments uploaded</div>
+                                                            @if ($segments && json_decode($segments->files_path))
+                                                                @foreach (json_decode($segments->files_path) as $segment)
+                                                                    <div class="mb-3 min-width-5">
+                                                                        <strong>Segment {{ $loop->iteration }}:</strong>
+                                                                        <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        </td>
+                                                    @endif
+                                                @endif
+                                                <tr>
+                                                    <td>
+                                                        @foreach ($chunk as $line)
+                                                            <div>
+                                                                {{ $line }}
+                                                            </div>
+                                                        @endforeach
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>

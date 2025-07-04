@@ -77,7 +77,7 @@ class WorkOrderController extends Controller
                     $pdf = $parser->parseFile($path);
                     $text = $pdf->getText();
 
-                    $lines = preg_split("/\r\n|\n|\r/", $text);
+                    $lines = preg_split("/\./", $text);
                     $chunks = array_chunk($lines, 4);
                 } else {
                     $chunks = [];
