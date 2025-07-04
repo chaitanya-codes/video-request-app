@@ -12,6 +12,7 @@ use App\Models\Segment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\ProcessWorkOrderUpdate;
+use Smalot\PdfParser\Parser;
 
 class WorkOrderController extends Controller
 {
@@ -63,13 +64,34 @@ class WorkOrderController extends Controller
         ]);
         $workOrder = WorkOrder::find($id);
         $workOrderStatus = WorkorderStatus::where('video_request_id', $id)->first();
+        $segments = Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null;
+
+        $chunks = [];
+        if ($segments) {
+            $files = json_decode($segments->files_path);
+            foreach ($files as $index => $file) {
+                if ($segments) {
+                    $parser = new Parser();
+                    $path = storage_path('app/public/' . $file);
+                    // dd($path);
+                    $pdf = $parser->parseFile($path);
+                    $text = $pdf->getText();
+
+                    $lines = preg_split("/\r\n|\n|\r/", $text);
+                    $chunks = array_chunk($lines, 4);
+                } else {
+                    $chunks = [];
+                }
+            }
+        }
         if ($workOrder && $id) {
             return view('admin.view_order', [
                 'order' => $workOrder,
                 'orderStatus' => $workOrderStatus,
                 'orderFiles' => WorkorderFile::where('video_request_id', $id)->where('is_rejected', false)->get(),
                 'userFiles' => File::where('video_request_id', $id)->get(),
-                'segments' => Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null
+                'segments' => $segments,
+                'chunks' => $chunks
             ]);
         } else {
             return redirect()->route('admin.orders.index')->with('error', 'Order (ID: ' . $id . ') not found!');
@@ -103,7 +125,7 @@ class WorkOrderController extends Controller
                 $uploaded = true;
             } else if ($request->hasFile('segment_file')) {
                 $request->validate([
-                    'segment_file.*' => 'file|mimes:mp4,mov,avi,wmv,scorm|max:20480'
+                    'segment_file.*' => 'file|mimes:pdf|max:20480'
                 ]);
                 $path = [];
                 foreach ($request->file('segment_file') as $index => $file) {

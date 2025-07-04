@@ -82,14 +82,48 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        @if ($segments && json_decode($segments->files_path))
-                            @foreach (json_decode($segments->files_path) as $segment)
-                                <div class="mb-3">
-                                    <strong>Segment {{ $loop->iteration }}:</strong>
-                                    <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
-                                </div>
-                            @endforeach
-                        @endif
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>PDF File</th>
+                                    <th>Chunks</th>
+                                    <th>Text</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($chunks)
+                                    @foreach ($chunks as $index => $chunk)
+                                        @if (!$segments)
+                                            <span>Segments not uploaded yet</span>
+                                        @else
+                                            @if ($index == 0)
+                                                <td rowspan="999">
+                                                    <div class="p-3">Segments uploaded</div>
+                                                    @if ($segments && json_decode($segments->files_path))
+                                                        @foreach (json_decode($segments->files_path) as $segment)
+                                                            <div class="mb-3 min-width-5">
+                                                                <strong>Segment {{ $loop->iteration }}:</strong>
+                                                                <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
+                                                </td>
+                                            @endif
+                                        @endif
+                                        <tr>
+                                            <td>
+                                                @foreach ($chunk as $line)
+                                                    <div>
+                                                        {{ $line }}
+                                                    </div>
+                                                @endforeach
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

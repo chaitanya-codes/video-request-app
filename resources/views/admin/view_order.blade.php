@@ -96,7 +96,7 @@
                     <button type="submit" class="btn btn-primary">Upload Voiceover</button>
                 </form>
             </div>
-        @elseif (getStatusLabel($orderStatus, 3, $files['segments'], $segments) == 'Pending' && $orderStatus->stage == 3)
+        @elseif (in_array(getStatusLabel($orderStatus, 3, $files['segments'], $segments), ['Pending', 'Awaiting approval']) && $orderStatus->stage == 3)
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="card-title">Upload Script Segments</h5>
                 <form action="{{ route('admin.orders.update-status', ['id' => $order->id]) }}" method="POST" enctype="multipart/form-data">
@@ -110,13 +110,52 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="segment_file" class="form-label">Upload Segments</label>
-                                        <input type="file" name="segment_file[]" class="form-control" accept=".mp4,.mov,.avi,.wmv,.scorm" multiple required />
-                                        <div class="invalid-feedback">
-                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
-                                        </div>
-                                    </div>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>PDF File</th>
+                                                <th>Chunks</th>
+                                                <th>Text</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if ($chunks)
+                                                @foreach ($chunks as $index => $chunk)
+                                                    @if (!$segments)
+                                                        <label for="segment_file" class="form-label">Upload Segments</label>
+                                                        <input type="file" name="segment_file[]" class="form-control" accept=".pdf" multiple required />
+                                                        <div class="invalid-feedback">
+                                                            Please upload segments in supported video formats (.mp4, .mov, .avi, .wmv, .scorm).
+                                                        </div>
+                                                    @else
+                                                        @if ($index == 0)
+                                                            <td rowspan="999">
+                                                                <div class="p-3">Segments uploaded</div>
+                                                                @if ($segments && json_decode($segments->files_path))
+                                                                    @foreach (json_decode($segments->files_path) as $segment)
+                                                                        <div class="mb-3 min-width-5">
+                                                                            <strong>Segment {{ $loop->iteration }}:</strong>
+                                                                            <a href="{{ route('order.view-file', ['id' => $order->id, 'path' => $segment]) }}" class="btn btn-info btn-sm">View File</a>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @endif
+                                                            </td>
+                                                        @endif
+                                                    @endif
+                                                    <tr>
+                                                        <td>
+                                                            @foreach ($chunk as $line)
+                                                                <div>
+                                                                    {{ $line }}
+                                                                </div>
+                                                            @endforeach
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -182,7 +221,7 @@
                 </li>
                 <li class="list-group-item"><strong>Design Notes:</strong> {{ $order->brand_design_notes }}</li>
                 <li class="list-group-item"><strong>2D Animation Required:</strong>
-                    {{ $order->animation_required ? 'Yes' : 'No' }}</li>
+                    {{ $order->animation_required ? 'Yes' : 'No' }}z</li>
             </ul>
         </div>
     </div>

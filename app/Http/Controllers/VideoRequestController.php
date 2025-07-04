@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\File;
 use App\Models\Segment;
 use Illuminate\Support\Facades\Storage;
+use Smalot\PdfParser\Parser;
 
 class VideoRequestController extends Controller {
     
@@ -139,9 +140,26 @@ class VideoRequestController extends Controller {
         ]);
         // TODO: Check if user is viewing their order only
         // $userId = auth()->user()->id;
-
-        // sample id
         if ($id) {
+            $segments = Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null;
+            $chunks = [];
+            if ($segments) {
+                $files = json_decode($segments->files_path);
+                foreach ($files as $index => $file) {
+                    if ($segments) {
+                        $parser = new Parser();
+                        $path = storage_path('app/public/' . $file);
+                        // dd($path);
+                        $pdf = $parser->parseFile($path);
+                        $text = $pdf->getText();
+
+                        $lines = preg_split("/\r\n|\n|\r/", $text);
+                        $chunks = array_chunk($lines, 4);
+                    } else {
+                        $chunks = [];
+                    }
+                }
+            }
             $workOrder = WorkOrder::find($id);
             if ($workOrder) {
                 return view('view_order', [
@@ -149,7 +167,8 @@ class VideoRequestController extends Controller {
                     'orderStatus' => WorkorderStatus::where('video_request_id', $id)->first(),
                     'orderFiles' => WorkorderFile::where('video_request_id', $id)->where('is_rejected', false)->get(),
                     'userFiles' => File::where('video_request_id', $id)->get(),
-                    'segments' => Segment::where('video_request_id', $id)->where('is_rejected', false)->first() ?? null
+                    'segments' => $segments,
+                    'chunks' => $chunks
                 ]);
             } else {
                 return redirect()->route('video-requests.create')->with('error', 'Order not found!');
