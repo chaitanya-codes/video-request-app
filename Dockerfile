@@ -37,6 +37,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
 # Set environment
 ENV APP_ENV=production
 ENV APP_DEBUG=false
